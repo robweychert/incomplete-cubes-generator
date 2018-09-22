@@ -2,7 +2,7 @@
 # SETTINGS
 # ------------------------------------------------------------
 
-format = 'svg' # 'svg', 'pdf', or 'both'
+format = 'both' # 'svg', 'pdf', or 'both'
 partial = 1 # draw all open cube variations with this many parts
 
 # parts  variations
@@ -28,7 +28,6 @@ widthColor = (0.66, 0.66, 0.66)
 depthColor = (0.33, 0.33, 0.33)
 topColor = (1, 1, 1)
 gridColor = (0, 1, 1)
-guideCubeColor = (1, 1, 0)
 
 # ------------------------------------------------------------
 
@@ -52,7 +51,7 @@ def grid(): # draw the axonometric grid
             (canvasWidth, 0 - canvasHeight / 2 + i)
         )
         line(
-            (0, 0 + canvasHeight * 2 - i * ygs),
+            (0, canvasHeight * 2 - i),
             (canvasWidth, 0 + canvasHeight * 1.5 - i)
         )
 
@@ -223,11 +222,20 @@ for i in range(len(uniqueCombos)):
 try:
     partial
 except NameError: # if the `partial` variable isn't defined
-    generate = 'full set'
+    generate = 'full set' # draw ALL open cube variations (this can take quite awhile)
 else:
-    generate = 'partial set'
+    generate = 'partial set' # draw only open cube variations with the number of parts specified in `partial`
 
 totalDrawings = 0
+
+# The loop below puts everything together and generates the
+# final images. For each combination in the `uniqueCombos`
+# list, it draws the individual parts using the `block`
+# function, taking stacking order into account, and drawing
+# alternate versions of the parts when necessary. SVGs are
+# printed to the console; PDFs are generated as external files
+# in the same directory as this file and organized in sub-
+# directories.
 
 for comboSet in uniqueCombos:
     if generate == 'partial set' and uniqueCombos.index(comboSet) == partial - 1 or generate == 'full set':
@@ -258,7 +266,6 @@ for comboSet in uniqueCombos:
                             if not os.path.exists('PDF/' + numParts):
                                 os.makedirs('PDF/' + numParts)
                             saveImage(destination, multipage=False)
-            # guideCube()
             if format == 'svg' or format == 'both':
                 print('</svg><p>' + str(partial) + '/' + str(numDrawings) + '</p></div>')
 
